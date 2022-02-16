@@ -28,25 +28,32 @@ public class UserResource {
 	public ResponseEntity<List<UserDTO>> findAll() {
 		List<User> list = service.findAll();
 		List<UserDTO> listDto = list.stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
-		
+
 		return ResponseEntity.ok().body(listDto);
 	}
-	
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<UserDTO> findById(@PathVariable String id) {
 		User obj = service.findById(id);
-		
+
 		return ResponseEntity.ok().body(new UserDTO(obj));
 	}
 	
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> deleteById(@PathVariable String id) {
+		service.delete(id);
+		return ResponseEntity.noContent().build();
+		
+	}
+
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> insert(@RequestBody UserDTO userDto) {
 		User obj = service.fromDTO(userDto);
 		obj = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
-		
+
 		return ResponseEntity.created(uri).build();
-		
+
 	}
 
 }
